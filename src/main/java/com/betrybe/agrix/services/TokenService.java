@@ -2,8 +2,10 @@ package com.betrybe.agrix.services;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 /**
@@ -11,7 +13,6 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class TokenService {
-
   private final Algorithm algorithm;
 
   /**
@@ -20,7 +21,7 @@ public class TokenService {
    * @param secret the secret
    */
   public TokenService(@Value("${api.security.token.secret}") String secret) {
-    algorithm = Algorithm.HMAC256(secret);
+    this.algorithm = Algorithm.HMAC256(secret);
   }
 
   /**
@@ -29,10 +30,10 @@ public class TokenService {
    * @param person the person
    * @return the string
    */
-  public String generateToken(User person) {
+  public String generateToken(UserDetails person) {
     return JWT.create()
-        .withIssuer("agrix")
         .withSubject(person.getUsername())
+        .withExpiresAt(generateExpiration())
         .sign(algorithm);
   }
 
@@ -44,9 +45,13 @@ public class TokenService {
    */
   public String validateToken(String token) {
     return JWT.require(algorithm)
-        .withIssuer("agrix")
         .build()
         .verify(token)
         .getSubject();
+  }
+
+  private Instant generateExpiration() {
+    return Instant.now()
+        .plus(2, ChronoUnit.HOURS);
   }
 }

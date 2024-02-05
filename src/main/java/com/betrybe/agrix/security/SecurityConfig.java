@@ -11,6 +11,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -23,6 +25,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
   private final SecurityFilter securityFilter;
 
+  /**
+   * Instantiates a new Security config.
+   *
+   * @param securityFilter the security filter
+   */
   @Autowired
   public SecurityConfig(SecurityFilter securityFilter) {
     this.securityFilter = securityFilter;
@@ -50,10 +57,27 @@ public class SecurityConfig {
         .build();
   }
 
+  /**
+   * Authentication manager authentication manager.
+   *
+   * @param authenticationConfiguration the authentication configuration
+   * @return the authentication manager
+   * @throws Exception the exception
+   */
   @Bean
   public AuthenticationManager authenticationManager(
       AuthenticationConfiguration authenticationConfiguration) throws Exception {
     return authenticationConfiguration.getAuthenticationManager();
+  }
+
+  /**
+   * Password encoder password encoder.
+   *
+   * @return the password encoder
+   */
+  @Bean
+  public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
   }
 
 }
