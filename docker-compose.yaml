@@ -1,0 +1,18 @@
+version: "3"
+
+services:
+  mysql:
+    image: mysql:8.0.32
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: agrixdb
+
+  agrix:
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
